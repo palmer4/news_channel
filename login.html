@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - WORLD RADIO</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-container h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #764ba2;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .toggle-form a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #ffe0e0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success {
+            color: #51cf66;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e6ffed;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .form-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .form-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">📰 WORLD RADIO</div>
+            <div class="search-bar">
+                <a href="index.html" style="color: white; text-decoration: none;">← Back to News</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <div id="loginForm">
+            <h1>Login</h1>
+            <div class="error" id="loginError"></div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+            <div class="toggle-form">
+                Don't have an account? <a onclick="toggleForms()">Register here</a>
+            </div>
+            <div class="form-links">
+                <a href="index.html">Continue as Guest</a>
+            </div>
+        </div>
+
+        <div id="registerForm" style="display: none;">
+            <h1>Register</h1>
+            <div class="error" id="registerError"></div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="registerUsername">Username:</label>
+                    <input type="text" id="registerUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword2">Confirm Password:</label>
+                    <input type="password" id="registerPassword2" required minlength="6">
+                </div>
+                <button type="submit" class="btn-submit">Register</button>
+            </form>
+            <div class="toggle-form">
+                Already have an account? <a onclick="toggleForms()">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'http://localhost:5000';
+
+        function toggleForms() {
+            document.getElementById('loginForm').style.display = 
+                document.getElementById('loginForm').style.display === 'none' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = 
+                document.getElementById('registerForm').style.display === 'none' ? 'block' : 'none';
+            clearErrors();
+        }
+
+        function clearErrors() {
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('registerError').style.display = 'none';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Clear form fields
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    
+                    // Store credentials in localStorage
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('username', data.user.username);
+                    
+                    // Show success message
+                    alert('✅ Login successful! Redirecting...');
+                    
+                    // Redirect to admin if admin, else back to news
+                    if (data.user.username === 'admin') {
+                        window.location.href = 'admin.html';
+                        setTimeout(() => location.reload(), 500);
+                    } else {
+                        window.location.href = 'index.html';
+                        setTimeout(() => location.reload(), 500);
+                    }
+                } else {
+                    showError('loginError', data.error || 'Login failed');
+                }
+            } catch (error) {
+                showError('loginError', 'Connection error: ' + error.message);
+            }
+        }
+
+        async function handleRegister(event) {
+            event.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const password2 = document.getElementById('registerPassword2').value;
+
+            if (password !== password2) {
+                showError('registerError', 'Passwords do not match');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Clear form fields
+                    document.getElementById('registerUsername').value = '';
+                    document.getElementById('registerEmail').value = '';
+                    document.getElementById('registerPassword').value = '';
+                    document.getElementById('registerPassword2').value = '';
+                    
+                    // Store credentials in localStorage
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('userId', data.user.id);
+                    localStorage.setItem('username', data.user.username);
+                    
+                    // Show success message
+                    alert('✅ Registration successful! Redirecting...');
+                    
+                    // Redirect to news page
+                    window.location.href = 'index.html';
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    showError('registerError', data.error || 'Registration failed');
+                }
+            } catch (error) {
+                showError('registerError', 'Connection error: ' + error.message);
+            }
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
