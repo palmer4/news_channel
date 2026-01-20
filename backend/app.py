@@ -69,10 +69,10 @@ def init_db():
     
     if not admin_exists:
         # Create default admin user
-        admin_password = bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt())
+        admin_password = bcrypt.hashpw('igziabeherrehebaizgi@44'.encode('utf-8'), bcrypt.gensalt())
         c.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-                  ('admin', 'admin@worldradio.com', admin_password))
-        print("✅ Default admin user created (username: admin, password: admin123)")
+                  ('admin', 'icuc14c@worldradio.com', admin_password))
+        print("✅ Default admin user created (username: admin, password: igziabeherrehebaizgi@44)")
     
     conn.commit()
     conn.close()
