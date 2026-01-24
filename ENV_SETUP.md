@@ -32,23 +32,14 @@ cd backend
 # Copy the example file to create actual .env
 cp .env.example .env
 
-# Edit .env with your actual credentials
-# Uncomment and fill in the values:
-# - NEWSAPI_KEY: Get from https://newsapi.org (free tier available)
-# - JWT_SECRET: Generate a secure random string
+ - NEWSAPI_KEY: Get from https://newsapi.org (free tier available)
+ - JWT_SECRET: Generate a secure random string
 ```
 
 ### 2. Frontend Setup (if needed)
 ```bash
 # Navigate to root directory
 cd ..
-
-# Copy example file
-cp .env.example .env
-
-# Fill in your actual values
-```
-
 ### 3. Verify `.gitignore` is Working
 ```bash
 # Check that .env files are ignored
